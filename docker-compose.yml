@@ -1,0 +1,36 @@
+version: '3.1'
+
+services:
+  
+  # Service 1: The MySQL Database
+  db:
+    image: mysql:5.7
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_123
+      MYSQL_DATABASE: webapp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      # Map port 3306 on your Kali machine to port 3306 in the container
+      # This is for Lab 1-3, so you can connect with 'mysql-client'
+      - "3306:3306"
+    volumes:
+      # On startup, run any .sql files found in our local './db_init' folder
+      - ./db_init:/docker-entrypoint-initdb.d
+
+  # Service 2: The Vulnerable Web Application
+  webserver:
+    image: php:7.4-apache
+    restart: always
+    ports:
+      # Map port 8080 on your Kali machine to port 80 in the container
+      # This is for Lab 4-5, so you can access the website
+      - "8080:80"
+    volumes:
+      # Link our local './src' folder to the web root inside the container
+      - ./src:/var/www/html
+    depends_on:
+      # Tell Docker to start the 'db' service *before* starting this one
+      - db
