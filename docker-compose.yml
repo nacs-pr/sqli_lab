@@ -22,7 +22,9 @@ services:
 
   # Service 2: The Vulnerable Web Application
   webserver:
-    image: php:7.4-apache
+    build:
+      context: .
+      dockerfile: webserver.Dockerfile
     restart: always
     ports:
       # Map port 8080 on your Kali machine to port 80 in the container
